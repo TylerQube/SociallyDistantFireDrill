@@ -1,5 +1,6 @@
 package me.cuube.firedrill.plugin;
 
+import me.cuube.firedrill.engine.Person;
 import me.cuube.firedrill.utility.Geometry;
 import me.cuube.firedrill.utility.ItemBuilder;
 import me.cuube.firedrill.utility.Message;
@@ -48,7 +49,7 @@ public class FireDrillCreationManager implements Listener {
 
     public FireDrillCreationManager(FireDrillPlugin plugin) {
         this.plugin = plugin;
-        this.drillDraw.runTaskTimer(this.plugin, 0L, 10L);
+        this.drillDraw.runTaskTimer(this.plugin, 0L, 5L);
     }
 
     public void addToSetup(Player p, int numPeople, EntityType eType, double doorWidth) {
@@ -124,6 +125,10 @@ public class FireDrillCreationManager implements Listener {
                 return;
             }
 
+            if(setupDrill.getArea() < Person.getTotalArea() * setupDrill.getNumPeople()) {
+                p.sendMessage(Message.prefix() + "Room too small for chosen number of people! Try defining a larger room.");
+                return;
+            }
             // remove player from setup
             removeFromSetup(p);
             // create Fire Drill

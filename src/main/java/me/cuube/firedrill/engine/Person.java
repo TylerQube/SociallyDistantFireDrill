@@ -37,18 +37,20 @@ public class Person {
         this.location = newLoc;
     }
 
-    private EntityType entityType;
+    private final EntityType entityType;
     public EntityType getEntityType() {
         return this.entityType;
     }
 
-    private final double radius = 0.5;
-    public double getPhysicalRadius() {
-        return this.radius;
+    private static final double radius = 0.5;
+    public static double getPhysicalRadius() {
+        return radius;
     }
 
-    private final double exclusionRadius = 1.8288;
-    public double getExclusionRadius() {
-        return this.exclusionRadius;
+    private static final double exclusionRadius = 1.8288;
+    public static double getExclusionRadius() {
+        return exclusionRadius;
     }
+
+    public static double getTotalArea() { return Math.pow(2 * (radius + exclusionRadius), 2); }
 }

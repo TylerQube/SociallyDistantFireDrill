@@ -69,26 +69,26 @@ public class FireDrillManager {
 
     public ArrayList<Wall> generateWalls(BoundingBox bounds, Vector doorCenter, double doorWidth) {
         ArrayList<Wall> walls = new ArrayList<Wall>();
-        walls.add(new Wall(new Vector(bounds.getMinX(), bounds.getMinY(), bounds.getMaxZ()), new Vector(bounds.getMaxX(), 0, bounds.getMaxZ())));
+        walls.add(new Wall(new Vector(bounds.getMinX(), bounds.getMinY(), bounds.getMaxZ()), new Vector(bounds.getMaxX(), bounds.getMaxY(), bounds.getMaxZ())));
         walls.add(new Wall(
                     new Vector(bounds.getMaxX(), bounds.getMinY(), bounds.getMaxZ()),
-                    new Vector(bounds.getMaxX(), 0, bounds.getMinZ())
+                    new Vector(bounds.getMaxX(), bounds.getMaxY(), bounds.getMinZ())
         ));
 
         if(doorCenter.getX() == bounds.getMinX()) {
             // placed on left wall
             walls.add(new Wall(
                         new Vector(bounds.getMinX(), bounds.getMinY(), bounds.getMinZ()),
-                        new Vector(bounds.getMinX(), bounds.getMinY(), doorCenter.getZ() - doorWidth / 2)
+                        new Vector(bounds.getMinX(), bounds.getMaxY(), doorCenter.getZ() - doorWidth / 2)
             ));
             walls.add(new Wall(
                     new Vector(bounds.getMinX(), bounds.getMinY(), doorCenter.getZ() + doorWidth / 2),
-                    new Vector(bounds.getMinX(), bounds.getMinY(), bounds.getMaxZ())
+                    new Vector(bounds.getMinX(), bounds.getMaxY(), bounds.getMaxZ())
             ));
 
             walls.add(new Wall(
                     new Vector(bounds.getMinX(), bounds.getMinY(), bounds.getMinZ()),
-                    new Vector(bounds.getMaxX(), bounds.getMinY(), bounds.getMinZ())
+                    new Vector(bounds.getMaxX(), bounds.getMaxY(), bounds.getMinZ())
             ));
 
         }
@@ -96,16 +96,16 @@ public class FireDrillManager {
             // placed on bottom wall
             walls.add(new Wall(
                     new Vector(bounds.getMinX(), bounds.getMinY(), bounds.getMinZ()),
-                    new Vector(doorCenter.getX() - doorWidth / 2, bounds.getMinY(), bounds.getMinZ())
+                    new Vector(doorCenter.getX() - doorWidth / 2, bounds.getMaxY(), bounds.getMinZ())
             ));
             walls.add(new Wall(
                     new Vector(doorCenter.getX() + doorWidth / 2, bounds.getMinY(), bounds.getMinZ()),
-                    new Vector(bounds.getMaxX(), bounds.getMinY(), bounds.getMinZ())
+                    new Vector(bounds.getMaxX(), bounds.getMaxY(), bounds.getMinZ())
             ));
 
             walls.add(new Wall(
                     new Vector(bounds.getMinX(), bounds.getMinY(), bounds.getMinZ()),
-                    new Vector(bounds.getMinX(), bounds.getMinY(), bounds.getMaxZ())
+                    new Vector(bounds.getMinX(), bounds.getMaxY(), bounds.getMaxZ())
             ));
         }
         return walls;

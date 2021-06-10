@@ -55,6 +55,21 @@ public class SetupFireDrill {
         this.world = world;
     }
 
+    public BoundingBox getBounds() {
+        if(this.pointOne == null || this.pointTwo == null) {
+            return null;
+        }
+        BoundingBox bounds = new BoundingBox(pointOne.getX(), pointOne.getY(), pointOne.getZ(), pointTwo.getX(), pointTwo.getY(), pointTwo.getZ());
+        return bounds;
+    }
+
+    public double getArea() {
+        if(this.pointOne == null || this.pointTwo == null) {
+            return -1;
+        }
+        return this.getBounds().getWidthX() * this.getBounds().getWidthZ();
+    }
+
     public void drawBorderParticles() {
         BoundingBox bounds = new BoundingBox(pointOne.getX(), pointOne.getY(), pointOne.getZ(), pointTwo.getX(), pointTwo.getY(), pointTwo.getZ());
         drawParticleBoundingBox(pointOne.getWorld(), bounds, Particle.REDSTONE);

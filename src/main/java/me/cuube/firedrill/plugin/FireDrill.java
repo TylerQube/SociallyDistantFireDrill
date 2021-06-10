@@ -5,6 +5,7 @@ import me.cuube.firedrill.engine.Person;
 import me.cuube.firedrill.states.DrillState;
 import me.cuube.firedrill.states.RunningState;
 import me.cuube.firedrill.utility.Geometry;
+import me.cuube.firedrill.utility.Wall;
 import org.bukkit.Color;
 import org.bukkit.Location;
 import org.bukkit.Particle;
@@ -16,6 +17,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.util.BoundingBox;
 import org.bukkit.util.Vector;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -127,24 +129,41 @@ public class FireDrill {
     private void drawParticleBoundingBox(World w, BoundingBox bounds, Particle part) {
         Vector min = bounds.getMin();
         Vector max = bounds.getMax();
+        ArrayList<Wall> walls = this.engine.getWalls();
 
         // bottom edges
         drawParticleInRange(w, min, new Vector(max.getX(), min.getY(), min.getZ()), part);
-        drawParticleInRange(w, min, new Vector(min.getX(), max.getY(), min.getZ()), part);
-        drawParticleInRange(w, new Vector(max.getX(), min.getY(), min.getZ()), new Vector(max.getX(), max.getY(), min.getZ()), part);
-        drawParticleInRange(w, new Vector(min.getX(), max.getY(), min.getZ()), new Vector(max.getX(), max.getY(), min.getZ()), part);
-
-        // vertical edges
         drawParticleInRange(w, min, new Vector(min.getX(), min.getY(), max.getZ()), part);
         drawParticleInRange(w, new Vector(max.getX(), min.getY(), min.getZ()), new Vector(max.getX(), min.getY(), max.getZ()), part);
-        drawParticleInRange(w, new Vector(min.getX(), max.getY(), min.getZ()), new Vector(min.getX(), max.getY(), max.getZ()), part);
-        drawParticleInRange(w, new Vector(max.getX(), max.getY(), min.getZ()), new Vector(max.getX(), max.getY(), max.getZ()), part);
-
-        // top edges
         drawParticleInRange(w, new Vector(min.getX(), min.getY(), max.getZ()), new Vector(max.getX(), min.getY(), max.getZ()), part);
+
+        // vertical edges
+        drawParticleInRange(w, min, new Vector(min.getX(), max.getY(), min.getZ()), part);
+        drawParticleInRange(w, new Vector(max.getX(), min.getY(), min.getZ()), new Vector(max.getX(), max.getY(), min.getZ()), part);
         drawParticleInRange(w, new Vector(min.getX(), min.getY(), max.getZ()), new Vector(min.getX(), max.getY(), max.getZ()), part);
         drawParticleInRange(w, new Vector(max.getX(), min.getY(), max.getZ()), new Vector(max.getX(), max.getY(), max.getZ()), part);
+
+        // top edges
+        drawParticleInRange(w, new Vector(min.getX(), max.getY(), min.getZ()), new Vector(max.getX(), max.getY(), min.getZ()), part);
+        drawParticleInRange(w, new Vector(min.getX(), max.getY(), min.getZ()), new Vector(min.getX(), max.getY(), max.getZ()), part);
+        drawParticleInRange(w, new Vector(max.getX(), max.getY(), min.getZ()), new Vector(max.getX(), max.getY(), max.getZ()), part);
         drawParticleInRange(w, new Vector(min.getX(), max.getY(), max.getZ()), new Vector(max.getX(), max.getY(), max.getZ()), part);
+
+        // door
+//        System.out.println("door height: " + this.engine.getDoor().getHeight());
+        BoundingBox door = this.engine.getDoor();
+        Vector doorMin = door.getMin();
+        Vector doorMax = door.getMax();
+
+        if(this.engine.getDoorCenter().getX() == bounds.getMinX() || this.engine.getDoorCenter().getX() == bounds.getMaxX()) {
+            drawParticleInRange(w, new Vector(doorMin.getX(), doorMax.getY(), doorMin.getZ()), new Vector(doorMin.getX(), doorMax.getY(), doorMax.getZ()), part);
+            drawParticleInRange(w, new Vector(doorMin.getX(), doorMin.getY(), doorMax.getZ()), new Vector(doorMin.getX(), doorMax.getY(), doorMax.getZ()), part);
+        }
+        else {
+            drawParticleInRange(w, new Vector(doorMin.getX(), doorMax.getY(), doorMin.getZ()), new Vector(doorMax.getX(), doorMax.getY(), doorMin.getZ()), part);
+            drawParticleInRange(w, new Vector(doorMax.getX(), doorMin.getY(), doorMin.getZ()), new Vector(doorMax.getX(), doorMax.getY(), doorMin.getZ()), part);
+        }
+        drawParticleInRange(w, doorMin, new Vector(doorMin.getX(), doorMax.getY(), doorMin.getZ()), part);
     }
 
     private void drawParticleInRange(World w, Vector min, Vector max, Particle part) {
