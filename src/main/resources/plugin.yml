@@ -1,0 +1,9 @@
+name: FireDrill
+version: '1.0'
+main: me.cuube.firedrill.plugin.FireDrillPlugin
+api-version: 1.16
+author: QuantumCuube
+commands:
+  firedrill:
+    description: Base command for Fire Drill
+    usage: /<command> [setup]
