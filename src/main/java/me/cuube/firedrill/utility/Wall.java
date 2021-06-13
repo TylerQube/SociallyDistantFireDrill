@@ -32,13 +32,26 @@ public class Wall {
 
             if(this.getPointOne().getX() == this.getPointTwo().getX()) {
                 if ((Geometry.isBetween(this.getPointOne().getX(), oldX, newX))) {
-                    return true;
+                    if(Geometry.isBetween(oldZ, this.getPointOne().getZ(), this.getPointTwo().getZ()) &&
+                    Geometry.isBetween(newZ, this.getPointOne().getZ(), this.getPointTwo().getZ())) {
+                        System.out.println("Wall intersected on x-axis:");
+                        System.out.println(pointOne.toString());
+                        System.out.println(pointTwo.toString());
+                        return true;
+                    }
                 }
             }
 
             if(this.getPointOne().getZ() == this.getPointTwo().getZ()) {
                 if ((Geometry.isBetween(this.getPointOne().getZ(), oldZ, newZ))) {
-                    return true;
+                    if(Geometry.isBetween(oldX, this.getPointOne().getX(), this.getPointTwo().getX()) &&
+                    Geometry.isBetween(newX, this.getPointOne().getX(), this.getPointTwo().getX())) {
+                        System.out.println("Wall intersected on z-axis:");
+                        System.out.println(pointOne.toString());
+                        System.out.println(pointTwo.toString());
+                        return true;
+                    }
+
                 }
             }
         return false;

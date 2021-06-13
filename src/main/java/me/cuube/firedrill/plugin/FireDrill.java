@@ -42,6 +42,7 @@ public class FireDrill {
     public void setRunning(boolean bool) { this.running = bool; }
 
     private final FireDrillEngine engine;
+    public double getPersonLeftCount() { return this.engine.getPeople().size(); }
     public BoundingBox getBounds() {
         return this.engine.getBounds();
     }
@@ -57,8 +58,6 @@ public class FireDrill {
         this.engine = engine;
         this.world = world;
         this.owner = owner;
-
-        engine.setDrill(this);
 
         createEntities();
     }
@@ -80,11 +79,6 @@ public class FireDrill {
         }
     }
 
-    public void updateEntityDirection(Person p, Vector newLoc) {
-//        Location lookLoc = new Location(this.world, p.getLocation().getX(), p.getLocation().getY(), p.getLocation().getZ());
-//        this.entities.get(p).getLocation().setDirection(newLoc.subtract(p.getLocation()));
-    }
-
     public void setState(DrillState newState) {
         if(this.state != null && this.state.getClass() == newState.getClass()) return;
 
@@ -98,8 +92,6 @@ public class FireDrill {
             newState.setup();
         }
         this.state.enable(this.plugin);
-
-        // do stuff based on newState
     }
 
     public void stop() {
@@ -118,25 +110,36 @@ public class FireDrill {
         return tick;
     }
 
+    public void updateEntityDirection(Person p, Vector oldLoc, Vector newLoc) {
+
+//        Location lookLoc = new Location(this.world, p.getLocation().getX(), p.getLocation().getY(), p.getLocation().getZ());
+    }
+
     public void updateEntities() {
         for(Person p : this.engine.getPeople()) {
             if(p.isEscaped()) {
-                this.world.spawnParticle(Particle.FLAME, this.entities.get(p).getLocation().getX(), this.entities.get(p).getLocation().clone().getY() + 2.5, this.entities.get(p).getLocation().getZ(), 5);
                 entities.get(p).remove();
-                owner.sendMessage(Message.prefix() + "Person #" + (this.engine.getOriginalPeople().indexOf(p) + 1) + " escaped because: "
-                    + p.getLocation().getZ() + " <= " + this.engine.getDoorCenter().getZ());
-                owner.sendMessage(Message.prefix() + p.getLocation().toString());
+                owner.sendMessage(Message.prefix() + "Person #" + (this.engine.getOriginalPeople().indexOf(p) + 1) + " escaped!");
                 continue;
             }
-            /*if(this.entities.get(p).getLocation().equals(Geometry.locationFromVector(this.world, p.getLocation()))) {
-                owner.sendMessage("Entity not moving.");
-                this.world.spawnParticle(Particle.FIREWORKS_SPARK, this.entities.get(p).getLocation().getX(), this.entities.get(p).getLocation().clone().getY() + 2.5, this.entities.get(p).getLocation().getZ(), 1);
-            }*/
             boolean notMoving = false;
             if(this.entities.get(p).getLocation().equals(Geometry.locationFromVector(this.world, p.getLocation())))
                 notMoving = true;
 
+            /*if(!notMoving) {
+                updateEntityDirection(p, entities.get(p).getLocation().toVector().clone(), p.getLocation().clone());
+            }*/
+            Vector prevLocation = this.entities.get(p).getLocation().toVector().clone();
+
             this.entities.get(p).teleport(Geometry.locationFromVector(this.world, p.getLocation()));
+//            this.entities.get(p).setRotation(180, 0);
+            if(p.getLocation().clone().subtract(prevLocation.clone()).length() > 0) {
+                System.out.println("Orienting");
+                Vector lookDir = p.getLocation().clone().subtract(prevLocation.clone()).normalize();
+                Location orientedLoc = this.entities.get(p).getLocation().clone().setDirection(lookDir);
+                this.entities.get(p).teleport(orientedLoc);
+            }
+
             if(notMoving)
                 drawExclusionParticles(p.getLocation().clone(), Particle.REDSTONE, Color.fromRGB(255, 0, 0));
             else
@@ -167,7 +170,6 @@ public class FireDrill {
         Vector max = bounds.getMax();
         ArrayList<Wall> walls = this.engine.getWalls();
 
-//        BoundingBox door = this.engine.getDoor();
         Vector doorMin = new Vector(
                                 this.engine.getDoorCenter().getX() - this.engine.getDoorWidth() / 2,
                                 this.engine.getDoorCenter().getY(),
@@ -208,10 +210,6 @@ public class FireDrill {
         drawParticleInRange(w, new Vector(min.getX(), max.getY(), min.getZ()), new Vector(min.getX(), max.getY(), max.getZ()), part);
         drawParticleInRange(w, new Vector(max.getX(), max.getY(), min.getZ()), new Vector(max.getX(), max.getY(), max.getZ()), part);
         drawParticleInRange(w, new Vector(min.getX(), max.getY(), max.getZ()), new Vector(max.getX(), max.getY(), max.getZ()), part);
-
-        // door
-//        System.out.println("door height: " + this.engine.getDoor().getHeight());
-
 
         if(this.engine.getDoorCenter().getX() == bounds.getMinX() || this.engine.getDoorCenter().getX() == bounds.getMaxX()) {
             drawParticleInRange(w, new Vector(doorMin.getX(), doorMax.getY(), doorMin.getZ()), new Vector(doorMin.getX(), doorMax.getY(), doorMax.getZ()), part);

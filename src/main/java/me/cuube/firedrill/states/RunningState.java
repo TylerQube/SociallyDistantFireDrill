@@ -77,8 +77,7 @@ public class RunningState extends DrillState {
                         if(!tick) {
                             cancel();
                             drill.stop();
-                            drill.getOwner().sendMessage(Message.prefix() + "Drill complete!");
-                            return;
+                            drill.getOwner().sendMessage(Message.prefix() + "Drill complete in " + ChatColor.GREEN + String.format("%.2f", drill.getTime()) + "s");
                         }
                     }
                 };
@@ -105,7 +104,8 @@ public class RunningState extends DrillState {
             if(this.drill.isRunning())
                 fireDrillTick.cancel();
             drill.stop();
-            p.sendMessage(Message.prefix() + ChatColor.RED + "Fire Drill Stopped.");
+            p.sendMessage(Message.prefix() + ChatColor.RED + "Fire Drill Stopped at " +
+                    ChatColor.GREEN + String.format("%.2f", this.drill.getTime()) + "s" + ChatColor.RESET + ". " + (int)drill.getPersonLeftCount() + " people escaped!");
         }
     }
 

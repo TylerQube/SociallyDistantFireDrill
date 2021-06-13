@@ -15,8 +15,8 @@ import org.bukkit.util.Vector;
 import java.util.ArrayList;
 
 public class FireDrillManager {
-    private FireDrillPlugin plugin;
-    private ArrayList<FireDrill> drills;
+    private final FireDrillPlugin plugin;
+    private final ArrayList<FireDrill> drills;
 
     public FireDrillManager(FireDrillPlugin plugin) {
         this.plugin = plugin;
@@ -78,24 +78,6 @@ public class FireDrillManager {
                 new Vector(bounds.getMinX(), bounds.getMaxY(), bounds.getMaxZ())
         ));
 
-        /*if(doorCenter.getX() == bounds.getMinX()) {
-            // placed on left wall
-            walls.add(new Wall(
-                        new Vector(bounds.getMinX(), bounds.getMinY(), bounds.getMinZ()),
-                        new Vector(bounds.getMinX(), bounds.getMaxY(), doorCenter.getZ() - doorWidth / 2)
-            ));
-            walls.add(new Wall(
-                    new Vector(bounds.getMinX(), bounds.getMinY(), doorCenter.getZ() + doorWidth / 2),
-                    new Vector(bounds.getMinX(), bounds.getMaxY(), bounds.getMaxZ())
-            ));
-
-            walls.add(new Wall(
-                    new Vector(bounds.getMinX(), bounds.getMinY(), bounds.getMinZ()),
-                    new Vector(bounds.getMaxX(), bounds.getMaxY(), bounds.getMinZ())
-            ));
-
-        }
-        else {*/
         // placed on bottom wall
         walls.add(new Wall(
                 new Vector(bounds.getMinX(), bounds.getMinY(), bounds.getMinZ()),
@@ -106,8 +88,6 @@ public class FireDrillManager {
                 new Vector(bounds.getMaxX(), bounds.getMaxY(), bounds.getMinZ())
         ));
 
-
-//        }
         return walls;
     }
 }

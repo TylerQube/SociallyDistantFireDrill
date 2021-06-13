@@ -18,9 +18,9 @@ public class Geometry {
     }
 
     public static double distancePointToSegment(Vector endpointOne, Vector endpointTwo, Vector point)  {
-        Vector AB = endpointTwo.subtract(endpointOne);
-        Vector BE = point.subtract(endpointTwo);
-        Vector AE = point.subtract(endpointOne);
+        Vector AB = endpointTwo.clone().subtract(endpointOne.clone());
+        Vector BE = point.clone().subtract(endpointTwo.clone());
+        Vector AE = point.clone().subtract(endpointOne.clone());
 
         if(AB.dot(BE) > 0)
             return BE.length();

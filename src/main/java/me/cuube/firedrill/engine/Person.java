@@ -29,10 +29,8 @@ public class Person {
     }
 
     public Vector getMove(double timeStep) {
-//        return this.getLocation()/*.clone()*/.add(this.engine.getDoorCenter().subtract(this.getLocation()/*.clone()*/).normalize().multiply(Intelligence.maxSpeed));
         return this.intelligence.getMove(timeStep);
     }
-
 
     private Vector location;
     public Vector getLocation() {
