@@ -90,8 +90,8 @@ public class FireDrillEngine {
 
             // cancel movement if runs into wall or breaches personal space
             boolean invalidMove = false;
-//            if(breachesPersonalSpace(person, proposedMove.clone(), this.people) || Geometry.hitsWall(proposedMove.clone(), Person.getPhysicalRadius(), this.walls) || Geometry.intersectsWall(person.getLocation().clone(), proposedMove.clone(), this.walls))
-//                invalidMove = true;
+            if(breachesPersonalSpace(person, proposedMove.clone(), this.people) || Geometry.hitsWall(proposedMove.clone(), Person.getPhysicalRadius(), this.walls) || Geometry.intersectsWall(person.getLocation().clone(), proposedMove.clone(), this.walls))
+                invalidMove = true;
 //            if(breachesPersonalSpace(person, proposedMove.clone(), this.people)) {
 //                System.out.println("Move breaches personal space.");
 //            }
@@ -102,14 +102,14 @@ public class FireDrillEngine {
 //                System.out.println("Move intersects wall.");
 //            }
 //
-//            if(!invalidMove) {
+            if(!invalidMove) {
 //                this.drill.updateEntityDirection(this.people.get(this.people.indexOf(person)), proposedMove.clone());
                 person.setLocation(proposedMove.clone());
-            System.out.println(personPrefix + " moved to " + person.getLocation().clone());
+                System.out.println(personPrefix + " moved to " + person.getLocation().clone());
 //                System.out.println("Valid move to " + person.getLocation().clone());
-//            } else {
-//                System.out.println("Invalid move.");
-//            }
+            } else {
+                System.out.println("Invalid move.");
+            }
         }
 
         for(Person p : peopleToRemove) {
@@ -166,7 +166,7 @@ public class FireDrillEngine {
                 continue;
             }
 
-            double minDistance = (Person.getPhysicalRadius() + Person.getExclusionRadius()) * 2;
+            double minDistance = ((Person.getPhysicalRadius() * 2) + Person.getExclusionRadius());
 
             System.out.println("Distance to person #" + this.people.indexOf(otherPerson) + ": " + person.getLocation().distance(otherPerson.getLocation()));
             if(location.distance(otherPerson.getLocation()) < minDistance)

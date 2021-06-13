@@ -6,6 +6,7 @@ import me.cuube.firedrill.states.DrillState;
 import me.cuube.firedrill.states.RunningState;
 import me.cuube.firedrill.utility.Geometry;
 import me.cuube.firedrill.utility.Message;
+import me.cuube.firedrill.utility.UtilityFunctions;
 import me.cuube.firedrill.utility.Wall;
 import org.bukkit.Color;
 import org.bukkit.Location;
@@ -127,11 +128,33 @@ public class FireDrill {
                 owner.sendMessage(Message.prefix() + p.getLocation().toString());
                 continue;
             }
-            if(this.entities.get(p).getLocation().equals(Geometry.locationFromVector(this.world, p.getLocation()))) {
+            /*if(this.entities.get(p).getLocation().equals(Geometry.locationFromVector(this.world, p.getLocation()))) {
                 owner.sendMessage("Entity not moving.");
                 this.world.spawnParticle(Particle.FIREWORKS_SPARK, this.entities.get(p).getLocation().getX(), this.entities.get(p).getLocation().clone().getY() + 2.5, this.entities.get(p).getLocation().getZ(), 1);
-            }
+            }*/
+            boolean notMoving = false;
+            if(this.entities.get(p).getLocation().equals(Geometry.locationFromVector(this.world, p.getLocation())))
+                notMoving = true;
+
             this.entities.get(p).teleport(Geometry.locationFromVector(this.world, p.getLocation()));
+            if(notMoving)
+                drawExclusionParticles(p.getLocation().clone(), Particle.REDSTONE, Color.fromRGB(255, 0, 0));
+            else
+                drawExclusionParticles(p.getLocation().clone(), Particle.REDSTONE, Color.fromRGB(255, 255, 255));
+        }
+    }
+
+    private void drawExclusionParticles(Vector loc, Particle part, Color color) {
+        Vector relativeParticleLoc = new Vector(0, 0, -(Person.getExclusionRadius() + Person.getPhysicalRadius()));
+        for(int deg = 0; deg < 360; deg += 5) {
+            Vector newParticleLoc = new Vector(0, 0, 0);
+            newParticleLoc.setX(Math.cos(deg) * relativeParticleLoc.clone().getX() - Math.sin(deg) * relativeParticleLoc.clone().getZ());
+            newParticleLoc.setZ(Math.sin(deg) * relativeParticleLoc.clone().getX() + Math.cos(deg) * relativeParticleLoc.clone().getZ());
+
+            Vector absParticleLoc = loc.clone().add(newParticleLoc.clone());
+            Particle.DustOptions dust = new Particle.DustOptions(
+                    color, 1);
+            this.world.spawnParticle(part, Geometry.locationFromVector(this.world, absParticleLoc.clone()), 1, 0, 0, 0, dust);
         }
     }
 

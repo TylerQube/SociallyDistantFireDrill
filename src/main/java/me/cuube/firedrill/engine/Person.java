@@ -52,7 +52,7 @@ public class Person {
         return radius;
     }
 
-    private static final double exclusionRadius = 3;
+    private static final double exclusionRadius = 2.5;
     public static double getExclusionRadius() {
         return exclusionRadius;
     }
