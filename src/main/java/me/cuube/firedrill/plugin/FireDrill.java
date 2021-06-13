@@ -42,12 +42,12 @@ public class FireDrill {
     public void setRunning(boolean bool) { this.running = bool; }
 
     private final FireDrillEngine engine;
-    public double getPersonLeftCount() { return this.engine.getPeople().size(); }
+    public double getPersonLeftCount() { return this.engine.getOriginalPeople().size() - this.engine.getPeople().size(); }
     public BoundingBox getBounds() {
         return this.engine.getBounds();
     }
 
-    private Map<Person, Entity> entities = new HashMap<>();
+    private final Map<Person, Entity> entities = new HashMap<>();
 
     private Color outlineColor = Color.fromRGB(255, 255, 255);
     public Color getColor() { return this.outlineColor; }
