@@ -9,29 +9,34 @@ public class Person {
         this.engine = engine;
         this.location = position;
         this.entityType = eType;
+
+        this.intelligence = new IntelligenceTylerSmith();
+        this.intelligence.setPerson(this);
     }
 
-    private final FireDrillEngine engine;
+    private FireDrillEngine engine;
     public FireDrillEngine getEngine() {
         return this.engine;
     }
 
-    private Intelligence intelligence;
+    private final Intelligence intelligence;
     public Intelligence getIntelligence() {
         return this.intelligence;
     }
-    public void setIntelligence(Intelligence intelligence) {
-        this.intelligence = intelligence;
+
+    public boolean isEscaped() {
+        return this.getLocation().getZ() <= this.engine.getDoorCenter().getZ();
     }
 
     public Vector getMove(double timeStep) {
-//        return this.intelligence.getMove(timeStep);
-        return this.location;
+//        return this.getLocation()/*.clone()*/.add(this.engine.getDoorCenter().subtract(this.getLocation()/*.clone()*/).normalize().multiply(Intelligence.maxSpeed));
+        return this.intelligence.getMove(timeStep);
     }
+
 
     private Vector location;
     public Vector getLocation() {
-        return this.location;
+        return this.location.clone();
     }
     public void setLocation(Vector newLoc) {
         this.location = newLoc;
@@ -47,7 +52,7 @@ public class Person {
         return radius;
     }
 
-    private static final double exclusionRadius = 1.8288;
+    private static final double exclusionRadius = 3;
     public static double getExclusionRadius() {
         return exclusionRadius;
     }

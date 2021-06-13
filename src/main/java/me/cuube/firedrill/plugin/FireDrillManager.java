@@ -32,7 +32,7 @@ public class FireDrillManager {
 
         BoundingBox bounds = Geometry.boundsFromLocs(setupFireDrill.getPointOne(), setupFireDrill.getPointTwo());
         Vector doorCenter = calculateDoorCenter(bounds);
-        FireDrillEngine engine = new FireDrillEngine(setupFireDrill.getNumPeople(), bounds, doorCenter, setupFireDrill.getDoorWidth());
+        FireDrillEngine engine = new FireDrillEngine(setupFireDrill.getNumPeople(), bounds, setupFireDrill.getDoorWidth());
         // ADD WALLS
         generateWalls(bounds, doorCenter, setupFireDrill.getDoorWidth()).forEach(engine::addWall);
         engine.generateRandomPeople(setupFireDrill.getNumPeople(), setupFireDrill.getEntityType());
@@ -60,22 +60,25 @@ public class FireDrillManager {
     }
 
     public Vector calculateDoorCenter(BoundingBox bounds) {
-        if(bounds.getWidthX() >= bounds.getWidthZ()) {
-            return new Vector(bounds.getCenterX(), bounds.getMinY(), bounds.getMinZ());
-        } else {
-            return new Vector(bounds.getMinX(), bounds.getMinY(), bounds.getCenterZ());
-        }
+        return new Vector(bounds.getCenterX(), bounds.getMinY(), bounds.getMinZ());
     }
 
     public ArrayList<Wall> generateWalls(BoundingBox bounds, Vector doorCenter, double doorWidth) {
         ArrayList<Wall> walls = new ArrayList<Wall>();
-        walls.add(new Wall(new Vector(bounds.getMinX(), bounds.getMinY(), bounds.getMaxZ()), new Vector(bounds.getMaxX(), bounds.getMaxY(), bounds.getMaxZ())));
+        walls.add(new Wall(
+                    new Vector(bounds.getMinX(), bounds.getMinY(), bounds.getMaxZ()),
+                    new Vector(bounds.getMaxX(), bounds.getMaxY(), bounds.getMaxZ())
+        ));
         walls.add(new Wall(
                     new Vector(bounds.getMaxX(), bounds.getMinY(), bounds.getMaxZ()),
                     new Vector(bounds.getMaxX(), bounds.getMaxY(), bounds.getMinZ())
         ));
+        walls.add(new Wall(
+                new Vector(bounds.getMinX(), bounds.getMinY(), bounds.getMinZ()),
+                new Vector(bounds.getMinX(), bounds.getMaxY(), bounds.getMaxZ())
+        ));
 
-        if(doorCenter.getX() == bounds.getMinX()) {
+        /*if(doorCenter.getX() == bounds.getMinX()) {
             // placed on left wall
             walls.add(new Wall(
                         new Vector(bounds.getMinX(), bounds.getMinY(), bounds.getMinZ()),
@@ -92,22 +95,19 @@ public class FireDrillManager {
             ));
 
         }
-        else {
-            // placed on bottom wall
-            walls.add(new Wall(
-                    new Vector(bounds.getMinX(), bounds.getMinY(), bounds.getMinZ()),
-                    new Vector(doorCenter.getX() - doorWidth / 2, bounds.getMaxY(), bounds.getMinZ())
-            ));
-            walls.add(new Wall(
-                    new Vector(doorCenter.getX() + doorWidth / 2, bounds.getMinY(), bounds.getMinZ()),
-                    new Vector(bounds.getMaxX(), bounds.getMaxY(), bounds.getMinZ())
-            ));
+        else {*/
+        // placed on bottom wall
+        walls.add(new Wall(
+                new Vector(bounds.getMinX(), bounds.getMinY(), bounds.getMinZ()),
+                new Vector(doorCenter.getX() - doorWidth / 2, bounds.getMaxY(), bounds.getMinZ())
+        ));
+        walls.add(new Wall(
+                new Vector(doorCenter.getX() + doorWidth / 2, bounds.getMinY(), bounds.getMinZ()),
+                new Vector(bounds.getMaxX(), bounds.getMaxY(), bounds.getMinZ())
+        ));
 
-            walls.add(new Wall(
-                    new Vector(bounds.getMinX(), bounds.getMinY(), bounds.getMinZ()),
-                    new Vector(bounds.getMinX(), bounds.getMaxY(), bounds.getMaxZ())
-            ));
-        }
+
+//        }
         return walls;
     }
 }

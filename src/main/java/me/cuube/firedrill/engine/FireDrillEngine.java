@@ -1,7 +1,9 @@
 package me.cuube.firedrill.engine;
 
+import me.cuube.firedrill.plugin.FireDrill;
 import me.cuube.firedrill.utility.Geometry;
 import me.cuube.firedrill.utility.Wall;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.EntityType;
 import org.bukkit.util.BoundingBox;
 import org.bukkit.util.Vector;
@@ -12,17 +14,20 @@ import java.util.Random;
 
 public class FireDrillEngine {
 
-    private BoundingBox bounds;
+    private FireDrill drill;
+    public void setDrill(FireDrill drill) { this.drill = drill; }
+
+    private final BoundingBox bounds;
     public BoundingBox getBounds() {
-        return this.bounds;
+        return this.bounds.clone();
     }
-    private ArrayList<Wall> walls = new ArrayList<>();
+    private final ArrayList<Wall> walls = new ArrayList<>();
     public ArrayList<Wall> getWalls() { return this.walls; }
 
-    private Vector doorCenter;
-    public Vector getDoorCenter() { return this.doorCenter; }
-    private double doorWidth;
-    public BoundingBox getDoor() {
+    public Vector getDoorCenter() { return new Vector(this.bounds.getCenterX(), this.bounds.getMinY(), this.bounds.getMinZ()); }
+    private final double doorWidth;
+    public double getDoorWidth() { return this.doorWidth; }
+    /*public BoundingBox getDoor() {
         BoundingBox doorBounds;
         // parallel to x axis
         if(doorCenter.getX() == bounds.getMinX() || doorCenter.getX() == bounds.getMaxX()) {
@@ -39,21 +44,24 @@ public class FireDrillEngine {
             );
         }
         return doorBounds;
-    }
+    }*/
 
     private double time;
     public double getTime() { return this.time; }
-    private Random rand = new Random();
+    private final Random rand = new Random();
 
     private ArrayList<Person> people = new ArrayList<>();
     public ArrayList<Person> getPeople() {
         return this.people;
     }
+    private ArrayList<Person> originalPeople;
+    public ArrayList<Person> getOriginalPeople() {
+        return this.originalPeople;
+    }
 
-    public FireDrillEngine(int numPeople, BoundingBox bounds, Vector doorCenter, double doorWidth) {
+    public FireDrillEngine(int numPeople, BoundingBox bounds, double doorWidth) {
         this.bounds = bounds;
         System.out.println("New engine: " + this.bounds.toString());
-        this.doorCenter = doorCenter;
         this.doorWidth = doorWidth;
     }
 
@@ -62,19 +70,50 @@ public class FireDrillEngine {
         this.walls.add(newWall);
     }
 
+    public void removePerson(Person toRemove) {
+        this.people.remove(toRemove);
+    }
+
     public boolean tick(double timeStep) {
-        ArrayList<Person> peopleTurns = (ArrayList<Person>) this.people.clone();
-        Collections.shuffle(peopleTurns);
+        /*ArrayList<Person> peopleTurns = new ArrayList<Person>(this.people);
+        Collections.shuffle(peopleTurns);*/
+        ArrayList<Person> peopleToRemove = new ArrayList<>();
+        for(Person person : this.people) {
+            if(person.isEscaped()) {
+                peopleToRemove.add(person);
+                continue;
+            }
+            String personPrefix = "Person #" + (this.originalPeople.indexOf(person) + 1) + ": ";
 
-        for(Person person : peopleTurns) {
-           /* Vector proposedMove = person.getMove(timeStep);
+            Vector proposedMove = person.getMove(timeStep);
+//            System.out.println(personPrefix + "I am at: " + person.getLocation() + " and move to: " + proposedMove);
 
-            // cancel movement if runs into wall
-            if(Geometry.hitsWall(proposedMove, person.getPhysicalRadius(), this.walls)
-                || Geometry.intersectsWall(person.getLocation(), proposedMove, this.walls))*/
-                Vector proposedMove = person.getLocation();
+            // cancel movement if runs into wall or breaches personal space
+            boolean invalidMove = false;
+//            if(breachesPersonalSpace(person, proposedMove.clone(), this.people) || Geometry.hitsWall(proposedMove.clone(), Person.getPhysicalRadius(), this.walls) || Geometry.intersectsWall(person.getLocation().clone(), proposedMove.clone(), this.walls))
+//                invalidMove = true;
+//            if(breachesPersonalSpace(person, proposedMove.clone(), this.people)) {
+//                System.out.println("Move breaches personal space.");
+//            }
+//            if(Geometry.hitsWall(proposedMove.clone(), Person.getPhysicalRadius(), this.walls)) {
+//                System.out.println("Move hits wall.");
+//            }
+//            if(Geometry.intersectsWall(person.getLocation().clone(), proposedMove.clone(), this.walls)) {
+//                System.out.println("Move intersects wall.");
+//            }
+//
+//            if(!invalidMove) {
+//                this.drill.updateEntityDirection(this.people.get(this.people.indexOf(person)), proposedMove.clone());
+                person.setLocation(proposedMove.clone());
+            System.out.println(personPrefix + " moved to " + person.getLocation().clone());
+//                System.out.println("Valid move to " + person.getLocation().clone());
+//            } else {
+//                System.out.println("Invalid move.");
+//            }
+        }
 
-            person.setLocation(proposedMove);
+        for(Person p : peopleToRemove) {
+            this.people.remove(p);
         }
 
         this.time += timeStep;
@@ -83,13 +122,7 @@ public class FireDrillEngine {
 
     public boolean roomIsClear() {
         for(Person person : this.people) {
-            Vector loc = person.getLocation();
-            // Person escapes if outside/on edge of bounds
-            System.out.println(loc.toString());
-            System.out.println("Entity #" + this.people.indexOf(person) + " contained: " + this.bounds.contains(loc));
-            System.out.println("Entity #" + this.people.indexOf(person) + " not on edge: " + !onEdgeOfBounds(loc, this.bounds));
-
-            if(this.bounds.contains(loc) || !onEdgeOfBounds(loc, this.bounds)) {
+            if(!person.isEscaped()) {
                 return false;
             }
         }
@@ -116,29 +149,27 @@ public class FireDrillEngine {
 
                 newPosition = new Vector(x, bounds.getMinY(), z);
                 person.setLocation(newPosition.clone());
-            } while(Geometry.hitsWall(newPosition, person.getPhysicalRadius(), this.walls) || breachesPersonalSpace(person, newPeople));
+            } while(Geometry.hitsWall(newPosition, Person.getPhysicalRadius(), this.walls) || breachesPersonalSpace(person, person.getLocation(), newPeople));
 
             newPeople.add(person);
             System.out.println("Adding person at " + person.getLocation().toString());
         }
         this.people = newPeople;
+        this.originalPeople = new ArrayList<>(newPeople);
     }
 
-    public boolean breachesPersonalSpace(Person person, ArrayList<Person> otherPeople) {
-        System.out.println("Checking for breach of personal space.");
+    public boolean breachesPersonalSpace(Person person, Vector location, ArrayList<Person> otherPeople) {
+        System.out.println("Person #" + this.people.indexOf(person) + ": Checking for breach of personal space.");
         for(Person otherPerson : otherPeople) {
             if(otherPerson.equals(person)) {
-                System.out.println("Person #" + this.people.indexOf(otherPerson) + " == " + "Person #" + this.people.indexOf(person));
+//                System.out.println("Person #" + this.people.indexOf(otherPerson) + " == " + "Person #" + this.people.indexOf(person));
                 continue;
             }
 
-            double minDistance = person.getPhysicalRadius()
-                    + person.getExclusionRadius()
-                    + otherPerson.getPhysicalRadius()
-                    + otherPerson.getExclusionRadius();
+            double minDistance = (Person.getPhysicalRadius() + Person.getExclusionRadius()) * 2;
 
-            System.out.println("Distance between ppl: " + person.getLocation().distance(otherPerson.getLocation()));
-            if(person.getLocation().distance(otherPerson.getLocation()) < minDistance)
+            System.out.println("Distance to person #" + this.people.indexOf(otherPerson) + ": " + person.getLocation().distance(otherPerson.getLocation()));
+            if(location.distance(otherPerson.getLocation()) < minDistance)
                 return true;
         }
         return false;
