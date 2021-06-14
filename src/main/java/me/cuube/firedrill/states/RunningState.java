@@ -34,6 +34,12 @@ public class RunningState extends DrillState {
     private final static ItemStack pauseItem = new ItemBuilder(Material.ORANGE_CONCRETE).setName(PAUSE_ITEM_NAME);
     private final static ItemStack stopItem = new ItemBuilder(Material.BARRIER).setName(STOP_ITEM_NAME);
 
+    private final static String SHOW_PARTICLES_ITEM_NAME = "Visualize Exclusion Radii";
+    private final static ItemStack showParticlesItem = new ItemBuilder(Material.LIME_DYE).setName(SHOW_PARTICLES_ITEM_NAME);
+
+    private final static String HIDE_PARTICLES_ITEM_NAME = "Hide Exclusion Radii";
+    private final static ItemStack hideParticlesItem = new ItemBuilder(Material.RED_DYE).setName(HIDE_PARTICLES_ITEM_NAME);
+
 
     public void setup() {
         Player p = this.drill.getOwner();
@@ -47,6 +53,9 @@ public class RunningState extends DrillState {
         p.getInventory().setItem(0, playItem);
         p.getInventory().setItem(1, pauseItem);
         p.getInventory().setItem(2, stopItem);
+
+        p.getInventory().setItem(7, showParticlesItem);
+        p.getInventory().setItem(8, hideParticlesItem);
 
         p.sendMessage(Message.prefix() + "Use the items to view the fire drill simulation!");
     }
@@ -106,6 +115,24 @@ public class RunningState extends DrillState {
             drill.stop();
             p.sendMessage(Message.prefix() + ChatColor.RED + "Fire Drill Stopped at " +
                     ChatColor.GREEN + String.format("%.2f", this.drill.getTime()) + "s" + ChatColor.RESET + ". " + (int)drill.getPersonLeftCount() + " people escaped!");
+        }
+
+        else if(itemName.equalsIgnoreCase(SHOW_PARTICLES_ITEM_NAME)) {
+            if(this.drill.getDrawExclusion()) {
+                this.drill.getOwner().sendMessage(Message.prefix() + "Exclusion radii are already visualized!");
+                return;
+            }
+            this.drill.getOwner().sendMessage(Message.prefix() + "Visualizing exclusion radii!");
+            this.drill.setDrawExclusion(true);
+        }
+
+        else if(itemName.equalsIgnoreCase(HIDE_PARTICLES_ITEM_NAME)) {
+            if(!this.drill.getDrawExclusion()) {
+                this.drill.getOwner().sendMessage(Message.prefix() + "Exclusion radii are already hidden!");
+                return;
+            }
+            this.drill.getOwner().sendMessage(Message.prefix() + "Hiding exclusion radii!");
+            this.drill.setDrawExclusion(false);
         }
     }
 

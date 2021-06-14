@@ -151,7 +151,15 @@ public class FireDrill {
         }
     }
 
+    private boolean drawExclusionParticles = false;
+    public void setDrawExclusion(boolean draw) {
+        this.drawExclusionParticles = draw;
+    }
+    public boolean getDrawExclusion() { return this.drawExclusionParticles; }
+
     private void drawExclusionParticles(Vector loc, Particle part, Color color) {
+        if(!this.drawExclusionParticles) return;
+
         Vector relativeParticleLoc = new Vector(0, 0, -(Person.getExclusionRadius() / 2 + Person.getPhysicalRadius()));
         for(int deg = 0; deg < 360; deg += 5) {
             Vector newParticleLoc = new Vector(0, 0, 0);
