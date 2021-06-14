@@ -16,6 +16,7 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.BoundingBox;
 import org.bukkit.util.Vector;
 
@@ -63,6 +64,8 @@ public class FireDrill {
     }
 
     public void createEntities() {
+        this.extinguishEntities.runTaskTimer(this.plugin, 0L, 1);
+
         for(Person p : this.engine.getPeople()) {
             EntityType type = p.getEntityType();
             Location loc = new Location(this.world, p.getLocation().getX(), p.getLocation().getY(), p.getLocation().getZ());
@@ -73,6 +76,7 @@ public class FireDrill {
             if(e instanceof LivingEntity) {
                 ((LivingEntity) e).setAI(false);
                 ((LivingEntity) e).setCollidable(false);
+                ((LivingEntity) e).setFireTicks(0);
             }
 
             this.entities.put(p, e);
@@ -110,10 +114,15 @@ public class FireDrill {
         return tick;
     }
 
-    public void updateEntityDirection(Person p, Vector oldLoc, Vector newLoc) {
-
-//        Location lookLoc = new Location(this.world, p.getLocation().getX(), p.getLocation().getY(), p.getLocation().getZ());
-    }
+    private BukkitRunnable extinguishEntities = new BukkitRunnable() {
+        @Override
+        public void run() {
+            for(Person p : engine.getPeople()) {
+                if(entities.get(p) != null)
+                    entities.get(p).setFireTicks(0);
+            }
+        }
+    };
 
     public void updateEntities() {
         for(Person p : this.engine.getPeople()) {
@@ -125,14 +134,9 @@ public class FireDrill {
             boolean notMoving = false;
             if(this.entities.get(p).getLocation().equals(Geometry.locationFromVector(this.world, p.getLocation())))
                 notMoving = true;
-
-            /*if(!notMoving) {
-                updateEntityDirection(p, entities.get(p).getLocation().toVector().clone(), p.getLocation().clone());
-            }*/
             Vector prevLocation = this.entities.get(p).getLocation().toVector().clone();
 
             this.entities.get(p).teleport(Geometry.locationFromVector(this.world, p.getLocation()));
-//            this.entities.get(p).setRotation(180, 0);
             if(p.getLocation().clone().subtract(prevLocation.clone()).length() > 0) {
                 System.out.println("Orienting");
                 Vector lookDir = p.getLocation().clone().subtract(prevLocation.clone()).normalize();
@@ -148,7 +152,7 @@ public class FireDrill {
     }
 
     private void drawExclusionParticles(Vector loc, Particle part, Color color) {
-        Vector relativeParticleLoc = new Vector(0, 0, -(Person.getExclusionRadius() + Person.getPhysicalRadius()));
+        Vector relativeParticleLoc = new Vector(0, 0, -(Person.getExclusionRadius() / 2 + Person.getPhysicalRadius()));
         for(int deg = 0; deg < 360; deg += 5) {
             Vector newParticleLoc = new Vector(0, 0, 0);
             newParticleLoc.setX(Math.cos(deg) * relativeParticleLoc.clone().getX() - Math.sin(deg) * relativeParticleLoc.clone().getZ());
