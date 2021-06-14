@@ -113,6 +113,7 @@ public class FireDrillEngine {
                 (loc.getZ() == bounds.getMaxZ());
     }
 
+
     public void generateRandomPeople(int numPeople, EntityType entityType) {
         ArrayList<Person> newPeople = new ArrayList<>();
         System.out.println("generating " + numPeople + " people.");
