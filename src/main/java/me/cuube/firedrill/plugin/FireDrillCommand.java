@@ -50,17 +50,18 @@ public class FireDrillCommand implements CommandExecutor {
                         break;
                     case "random":
                     default:
-                        double width;
-                        double height;
+                        double width = Double.MAX_VALUE;
+                        double height = Double.MAX_VALUE;
                         Entity entity;
                         double maxSize = (Person.getExclusionRadius() / 2 + Person.getPhysicalRadius()) * 2;
                         do {
                             entityType = EntityType.values()[rand.nextInt(EntityType.values().length)];
+                            if(!(entityType.isSpawnable())) continue;
                             entity = p.getWorld().spawnEntity(new Location(p.getWorld(), 0, 10000000, 0), entityType);
                             width = entity.getBoundingBox().clone().getWidthX();
                             height = entity.getBoundingBox().clone().getWidthZ();
                             entity.remove();
-                        } while (!(entity instanceof LivingEntity) || width > maxSize || height > maxSize);
+                        } while (!entityType.isAlive() || width > maxSize || height > maxSize);
                         break;
                 }
             }

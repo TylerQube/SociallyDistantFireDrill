@@ -47,7 +47,6 @@ public abstract class Intelligence {
 
     public Vector getMove(double timeStep) {
         Vector proposedPosition = chooseNewPosition(timeStep);
-        System.out.println("Trying to move to: " + proposedPosition.clone().toString());
         return isLegalDistance(proposedPosition.clone(), timeStep) ? proposedPosition.clone() : this.getLocation().clone();
     }
 

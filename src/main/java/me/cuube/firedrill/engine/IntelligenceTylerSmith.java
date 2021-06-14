@@ -60,7 +60,6 @@ public class IntelligenceTylerSmith extends Intelligence {
         else
         {
             Vector moveForward = this.getLocation().clone().setZ(this.getLocation().clone().getZ() - 1);
-            System.out.println("Already escaped, moving to: " + moveForward);
             return moveToward(this.getLocation().clone(), moveForward, timeStep);
         }
     }

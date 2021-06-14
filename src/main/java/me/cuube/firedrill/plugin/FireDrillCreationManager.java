@@ -94,7 +94,6 @@ public class FireDrillCreationManager implements Listener {
 
     @EventHandler
     public void itemUse(PlayerInteractEvent e) {
-        System.out.println("Player interact event");
         if(!isInSetupMode(e.getPlayer())) return;
         if(e.getAction() != Action.RIGHT_CLICK_AIR && e.getAction() != Action.RIGHT_CLICK_BLOCK) return;
         if(!e.hasItem()) return;

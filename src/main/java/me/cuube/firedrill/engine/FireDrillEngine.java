@@ -40,7 +40,6 @@ public class FireDrillEngine {
 
     public FireDrillEngine(int numPeople, BoundingBox bounds, double doorWidth) {
         this.bounds = bounds;
-        System.out.println("New engine: " + this.bounds.toString());
         this.doorWidth = doorWidth;
     }
 
@@ -70,22 +69,9 @@ public class FireDrillEngine {
                 Geometry.hitsWall(proposedMove.clone(), Person.getPhysicalRadius(), this.walls) ||
                 Geometry.intersectsWall(person.getLocation().clone(), proposedMove.clone(), this.walls))
                 invalidMove = true;
-            if(breachesPersonalSpace(person, proposedMove.clone(), this.people)) {
-                System.out.println("Move breaches personal space.");
-            }
-            if(Geometry.hitsWall(proposedMove.clone(), Person.getPhysicalRadius(), this.walls)) {
-                System.out.println("Move hits wall.");
-            }
-            if(Geometry.intersectsWall(person.getLocation().clone(), proposedMove.clone(), this.walls)) {
-                System.out.println("Move intersects wall.");
-            }
 
             if(!invalidMove) {
-//                this.drill.updateEntityDirection(this.people.get(this.people.indexOf(person)), proposedMove.clone());
                 person.setLocation(proposedMove.clone());
-                System.out.println(personPrefix + " moved to " + person.getLocation().clone());
-            } else {
-                System.out.println("Invalid move.");
             }
         }
 

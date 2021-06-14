@@ -138,7 +138,6 @@ public class FireDrill {
 
             this.entities.get(p).teleport(Geometry.locationFromVector(this.world, p.getLocation()));
             if(p.getLocation().clone().subtract(prevLocation.clone()).length() > 0) {
-                System.out.println("Orienting");
                 Vector lookDir = p.getLocation().clone().subtract(prevLocation.clone()).normalize();
                 Location orientedLoc = this.entities.get(p).getLocation().clone().setDirection(lookDir);
                 this.entities.get(p).teleport(orientedLoc);
