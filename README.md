@@ -1,5 +1,5 @@
 # Socially Distant Fire Drill 
-## Recreation of IMSA Computational Science Project 2 in Minecraft 1.16.3
+## Recreation of Computational Science Project 2 in Minecraft 1.16.3
 
 The original version of this project was written in C# as part of a one semester course surveying various fields within Computational Science. 
 
